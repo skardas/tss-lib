@@ -97,7 +97,7 @@ var smallPrimes = []uint8{
 var smallPrimesProduct = new(big.Int).SetUint64(16294579238595022365)
 
 
-func GetRandomSafePrimesConcurrentMe(bitLen, numPrimes int, timeout time.Duration, concurrency int) ([]*GermainSafePrime, error) {
+func GetRandomSafePrimesConcurrent(bitLen, numPrimes int, timeout time.Duration, concurrency int) ([]*GermainSafePrime, error) {
 	var result  []*GermainSafePrime
 	for i := 0; i < numPrimes; i++ {
 		command := fmt.Sprintf("openssl prime --generate --hex --bits=%d --safe", bitLen)
