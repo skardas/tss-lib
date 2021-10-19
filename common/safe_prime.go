@@ -125,7 +125,7 @@ func GetRandomSafePrimesConcurrent(bitLen, numPrimes int, timeout time.Duration,
 			q: q,
 			p: p,
 		}
-		if next.Validate() {
+		if !next.Validate() {
 			break
 		}
 		result = append(result, next)
