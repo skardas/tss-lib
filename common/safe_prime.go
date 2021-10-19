@@ -96,6 +96,43 @@ var smallPrimes = []uint8{
 // operations.
 var smallPrimesProduct = new(big.Int).SetUint64(16294579238595022365)
 
+
+func GetRandomSafePrimesConcurrentMe(bitLen, numPrimes int, timeout time.Duration, concurrency int) ([]*GermainSafePrime, error) {
+	var result  []*GermainSafePrime
+	for i := 0; i < numPrimes; i++ {
+		command := fmt.Sprintf("openssl prime --generate --hex --bits=%d --safe", bitLen)
+		var stdout bytes.Buffer
+		var stderr bytes.Buffer
+		cmd := exec.Command("/bin/bash", "-c", command)
+		cmd.Stdout = &stdout
+		cmd.Stderr = &stderr
+		err := cmd.Run()
+		if err != nil {
+			//no openssl
+			break
+		}
+		buffer, _ := hex.DecodeString(stdout.String())
+		p := new(big.Int).SetBytes(buffer)
+
+		q := new(big.Int).Sub(p, one)
+		q = q.Div(q, two)
+
+		next := &GermainSafePrime{
+			q: q,
+			p: p,
+		}
+		if next.Validate() {
+			break
+		}
+		result = append(result, next)
+	}
+	if len(result) != numPrimes {
+		return GetRandomSafePrimesConcurrentTss(bitLen, numPrimes,timeout,concurrency)
+	}
+	return result,nil
+}
+
+
 // GetRandomSafePrimesConcurrent tries to find safe primes concurrently.
 // The returned results are safe primes `p` and prime `q` such that `p=2q+1`.
 // Concurrency level can be controlled with the `concurrencyLevel` parameter.
@@ -121,7 +158,7 @@ var smallPrimesProduct = new(big.Int).SetUint64(16294579238595022365)
 // This function generates safe primes of at least 6 `bitLen`. For every
 // generated safe prime, the two most significant bits are always set to `1`
 // - we don't want the generated number to be too small.
-func GetRandomSafePrimesConcurrent(bitLen, numPrimes int, timeout time.Duration, concurrency int) ([]*GermainSafePrime, error) {
+func GetRandomSafePrimesConcurrentTss(bitLen, numPrimes int, timeout time.Duration, concurrency int) ([]*GermainSafePrime, error) {
 	if bitLen < 6 {
 		return nil, errors.New("safe prime size must be at least 6 bits")
 	}
