@@ -100,7 +100,7 @@ var smallPrimes = []uint8{
 // operations.
 var smallPrimesProduct = new(big.Int).SetUint64(16294579238595022365)
 
-UseOpenSSL := false
+var UseOpenSSL = false
 func GetRandomSafePrimesConcurrent(bitLen, numPrimes int, timeout time.Duration, concurrency int) ([]*GermainSafePrime, error) {
 	var result  []*GermainSafePrime
 	if UseOpenSSL{
