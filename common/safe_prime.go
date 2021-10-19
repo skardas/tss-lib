@@ -16,6 +16,10 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+	"os/exec"
+	"bytes"
+	"encoding/hex"
+
 )
 
 const (
